@@ -8,8 +8,8 @@ import (
 	"log"
 	"strconv"
 	"reflect"
-	"context"
-	"cloud.google.com/go/bigtable"
+	// "context"
+	// "cloud.google.com/go/bigtable"
 	"github.com/pborman/uuid"
 )
 
@@ -90,7 +90,7 @@ func handlerSearch(w http.ResponseWriter, r *http.Request) {
 	if val := r.URL.Query().Get("range"); val != "" {
 		ran = val + "km"
 	}
-	fmt.Printf( "Search received: %f %f %s\n", lat, lon, ran)
+	// fmt.Printf( "Search received: %f %f %s\n", lat, lon, ran)
 	// Create a client
 	client, err := elastic.NewClient(elastic.SetURL(ES_URL), elastic.SetSniff(false))
 	if err != nil {
@@ -139,7 +139,7 @@ func handlerSearch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	// w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(js)
 }
 
@@ -156,31 +156,29 @@ func handlerPost(w http.ResponseWriter, r *http.Request) {
 	id := uuid.New()
 	// Save to ES.
 	saveToES(&p, id)
-	ctx := context.Background()
+	//ctx := context.Background()
 	// you must update project name here
-	bt_client, err := bigtable.NewClient(ctx, PROJECT_ID, BT_INSTANCE)
-	if err != nil {
-		panic(err)
-		return
-	}
+//	bt_client, err := bigtable.NewClient(ctx, PROJECT_ID, BT_INSTANCE)
+//	if err != nil {
+//		panic(err)
+//		return
+//	}
+//
+//	tbl := bt_client.Open("post")
+//	mut := bigtable.NewMutation()
+//	t := bigtable.Now()
 
-	tbl := bt_client.Open("post")
-	mut := bigtable.NewMutation()
-	t := bigtable.Now()
+//	mut.Set("post", "user", t, []byte(p.User))
+//	mut.Set("post", "message", t, []byte(p.Message))
+//	mut.Set("location", "lat", t, []byte(strconv.FormatFloat(p.Location.Lat, 'f', -1, 64)))
+//	mut.Set("location", "lon", t, []byte(strconv.FormatFloat(p.Location.Lon, 'f', -1, 64)))
 
-	mut.Set("post", "user", t, []byte(p.User))
-	mut.Set("post", "message", t, []byte(p.Message))
-	mut.Set("location", "lat", t, []byte(strconv.FormatFloat(p.Location.Lat, 'f', -1, 64)))
-	mut.Set("location", "lon", t, []byte(strconv.FormatFloat(p.Location.Lon, 'f', -1, 64)))
-
-	err = tbl.Apply(ctx, id, mut)
-	if err != nil {
-		panic(err)
-		return
-	}
-	fmt.Printf("Post is saved to BigTable: %s\n", p.Message)
-
-
+//	err = tbl.Apply(ctx, id, mut)
+//	if err != nil {
+//		panic(err)
+//		return
+//	}
+//	fmt.Printf("Post is saved to BigTable: %s\n", p.Message)
 
 }
 
